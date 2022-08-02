@@ -1,0 +1,22 @@
+{
+  "name": "day-bin",
+  "version": "1.0.0",
+  "description": "Share encrypted messages",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "wranger pages dev ./public --local"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabricionaweb/day-bin.git"
+  },
+  "author": "fabricionaweb",
+  "bugs": {
+    "url": "https://github.com/fabricionaweb/day-bin/issues"
+  },
+  "homepage": "https://github.com/fabricionaweb/day-bin#readme",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.14.1",
+    "wrangler": "^2.0.24"
+  }
+}
