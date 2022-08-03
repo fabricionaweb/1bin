@@ -1,1 +1,49 @@
-hello world from static
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Document</title>
+    <style>
+      .monospace {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    Your key <br />
+    <input
+      id="key"
+      type="text"
+      size="42"
+      class="monospace"
+      disabled
+    />
+
+    <hr />
+
+    Your content <br />
+    <textarea
+      id="content"
+      cols="43"
+      rows="10"
+      class="monospace"
+    ></textarea>
+
+    <hr />
+
+    <button id="go">Crypt it</button>
+
+    <script
+      type="text/javascript"
+      src="/main.js"
+    ></script>
+  </body>
+</html>

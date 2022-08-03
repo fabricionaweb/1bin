@@ -8,9 +8,25 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2022-08-03T07:19:36.853Z",
-    "modified": "2022-08-03T07:47:51.644Z",
+    "modified": "2022-08-03T08:16:33.884Z",
     "headers": [],
     "params": [],
+    "body": {
+      "type": "formdata",
+      "raw": "",
+      "form": [
+        {
+          "name": "IV",
+          "value": "37,228,246,116,54,233,86,11,76,197,164,157"
+        }
+      ],
+      "files": [
+        {
+          "name": "message",
+          "value": "./sampleEncryptedMessage"
+        }
+      ]
+    },
     "tests": []
   },
   {
