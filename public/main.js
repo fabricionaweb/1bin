@@ -58,7 +58,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const formData = new FormData()
     formData.append("iv", iv)
-    formData.append("message", new Blob([message]))
+    formData.append("file", new Blob([message]))
 
     fetch("/api", {
       method: "POST",

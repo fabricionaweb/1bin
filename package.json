@@ -4,7 +4,7 @@
   "description": "Share encrypted messages",
   "main": "public/index.html",
   "scripts": {
-    "start": "wrangler pages dev ./public --local"
+    "start": "wrangler pages dev ./public --kv DB --local"
   },
   "repository": {
     "type": "git",
