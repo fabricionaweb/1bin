@@ -1,2 +1,6 @@
 node_modules/
 /yarn.lock
+
+# thunder is a rest client for vscode
+# https://github.com/rangav/thunder-client-support
+/thunder-tests/thunderActivity.json
