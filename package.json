@@ -20,6 +20,7 @@
     "wrangler": "^2.0.24"
   },
   "dependencies": {
-    "@cloudflare/pages-plugin-sentry": "^1.0.0"
+    "@cloudflare/pages-plugin-sentry": "^1.0.0",
+    "fetch-blob": "^3.2.0"
   }
 }
