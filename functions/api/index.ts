@@ -1,4 +1,4 @@
-interface Env {
+type Env = {
   DB: KVNamespace
 }
 
