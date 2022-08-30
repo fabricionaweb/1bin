@@ -45,12 +45,29 @@ async function encrypt(decrypted, key, iv) {
 }
 
 async function decrypt(encrypted, key, iv) {
-  let decrypted = await crypto.subtle.decrypt(
+  const decrypted = await crypto.subtle.decrypt(
     { name: "AES-GCM", iv },
     key,
     encrypted
   )
   return new TextDecoder().decode(decrypted)
+}
+
+/*
+from https://developer.chrome.com/blog/how-to-convert-arraybuffer-to-and-from-string/
+*/
+function ab2str(buf) {
+  return String.fromCharCode.apply(null, new Uint8Array(buf))
+}
+
+// from https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
+function str2ab(str) {
+  const buf = new ArrayBuffer(str.length)
+  const bufView = new Uint8Array(buf)
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i)
+  }
+  return buf
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -59,14 +76,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (uuid) {
     const response = await fetch(`/api?uuid=${uuid}`)
     const iv = new Uint8Array(response.headers.get("x-iv").split(","))
-    const file = await response.arrayBuffer()
+    const file = await response.text()
     const key = await importKey(location.hash.slice(1))
 
     console.log(iv)
     console.log(key)
 
-    const message = await decrypt(file, key, iv)
-    console.log(message)
+    try {
+      const message = await decrypt(str2ab(window.atob(file)), key, iv)
+      console.log(message)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   const $inputKey = document.querySelector("input#key")
@@ -74,10 +95,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const $contentInput = document.querySelector("textarea#content")
 
   const cryptoKey = await generateKey()
-  const jsonKey = await exportKey(cryptoKey)
-
-  $inputKey.value = jsonKey.k
-  console.log(cryptoKey)
+  const { k: privateKey } = await exportKey(cryptoKey)
+  $inputKey.value = privateKey
 
   $cryptButton.addEventListener("click", async () => {
     const iv = generateIv()
@@ -85,11 +104,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const formData = new FormData()
     formData.append("iv", iv)
-    formData.append("file", new Blob([message]))
+    formData.append("message", window.btoa(ab2str(message)))
 
-    fetch("/api", {
+    const response = await fetch("/api", {
       method: "POST",
       body: formData,
     })
+    const { uuid } = await response.json()
+    window.location = `/${uuid}#${privateKey}`
   })
 })

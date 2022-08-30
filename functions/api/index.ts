@@ -1,5 +1,5 @@
 // Needs polyfill to run it on cloudflare
-import { Blob } from "fetch-blob"
+// import { Blob } from "fetch-blob"
 
 type Env = {
   DB: KVNamespace
@@ -18,13 +18,12 @@ export const onRequestPost: PagesFunction<Env> = async ({
 }) => {
   const formData = await request.formData()
   const metadata = formData.get("iv") as string
-  const file = formData.get("file") as string
+  const message = formData.get("message") as string
 
   const uuid = crypto.randomUUID()
-  const value = await new Blob([file]).arrayBuffer()
 
   try {
-    await DB.put(uuid, value, {
+    await DB.put(uuid, message, {
       metadata,
       expirationTtl: 86400, // time to live (TTL) in seconds (86400 = 1 day)
     })
@@ -43,15 +42,14 @@ export const onRequest: PagesFunction<Env> = async ({
   const { searchParams } = new URL(url)
   const uuid = searchParams.get("uuid")
 
-  const { value, metadata } = await DB.getWithMetadata<string>(uuid)
+  const { value: message, metadata } = await DB.getWithMetadata<string>(uuid)
 
-  if (!value) {
+  if (!message) {
     return new Response(null, { status: HttpStatusCode.NOT_FOUND })
   }
 
-  return new Response(value, {
+  return new Response(message, {
     headers: {
-      "content-type": "application/octet-stream",
       "x-iv": metadata,
     },
   })
