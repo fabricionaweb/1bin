@@ -21,19 +21,30 @@ async function exportKey(key) {
   return await crypto.subtle.exportKey("jwk", key)
 }
 
-async function importKey(jwk) {
-  return await crypto.subtle.importKey("jwk", jwk)
-}
-
-async function encrypt(string, key, iv) {
-  return await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
-    key,
-    new TextEncoder().encode(string)
+async function importKey(key) {
+  return await crypto.subtle.importKey(
+    "jwk",
+    {
+      k: key,
+      kty: "oct",
+      alg: "A256GCM",
+      ext: true,
+    },
+    { name: "AES-GCM" },
+    true,
+    ["encrypt", "decrypt"]
   )
 }
 
-async function decrypt(encrypted, iv, key) {
+async function encrypt(decrypted, key, iv) {
+  return await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    new TextEncoder().encode(decrypted)
+  )
+}
+
+async function decrypt(encrypted, key, iv) {
   let decrypted = await crypto.subtle.decrypt(
     { name: "AES-GCM", iv },
     key,
@@ -43,6 +54,21 @@ async function decrypt(encrypted, iv, key) {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
+  const uuid = location.pathname.slice(1)
+
+  if (uuid) {
+    const response = await fetch(`/api?uuid=${uuid}`)
+    const iv = new Uint8Array(response.headers.get("x-iv").split(","))
+    const file = await response.arrayBuffer()
+    const key = await importKey(location.hash.slice(1))
+
+    console.log(iv)
+    console.log(key)
+
+    const message = await decrypt(file, key, iv)
+    console.log(message)
+  }
+
   const $inputKey = document.querySelector("input#key")
   const $cryptButton = document.querySelector("button#go")
   const $contentInput = document.querySelector("textarea#content")
@@ -51,6 +77,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const jsonKey = await exportKey(cryptoKey)
 
   $inputKey.value = jsonKey.k
+  console.log(cryptoKey)
 
   $cryptButton.addEventListener("click", async () => {
     const iv = generateIv()
