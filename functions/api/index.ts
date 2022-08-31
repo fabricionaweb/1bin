@@ -1,6 +1,3 @@
-// Needs polyfill to run it on cloudflare
-// import { Blob } from "fetch-blob"
-
 type Env = {
   DB: KVNamespace
 }
