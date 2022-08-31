@@ -11,15 +11,19 @@ enum HttpStatusCode {
   NOT_FOUND = 404,
 }
 
-// POST /api
+/**
+ * POST /api
+ *  @header x-iv - request
+ *  @param message - type formData
+ *  @return { uuid } - json
+ */
 export const onRequestPost: PagesFunction<Env> = async ({
   request,
   env: { DB },
 }) => {
   const formData = await request.formData()
-  const metadata = formData.get("iv") as string
+  const metadata = request.headers.get("x-iv") as string
   const message = formData.get("message") as string
-
   const uuid = crypto.randomUUID()
 
   try {
@@ -34,7 +38,12 @@ export const onRequestPost: PagesFunction<Env> = async ({
   return Response.json({ uuid }, { status: HttpStatusCode.CREATED })
 }
 
-// GET /api
+/**
+ * GET /api
+ *  @header x-iv - response
+ *  @param uuid - type string
+ *  @return message
+ */
 export const onRequest: PagesFunction<Env> = async ({
   request: { url },
   env: { DB },
