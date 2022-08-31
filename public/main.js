@@ -1,8 +1,8 @@
-async function generateKey() {
-  return await crypto.subtle.generateKey(
+function generateKey() {
+  return crypto.subtle.generateKey(
     {
       name: "AES-GCM",
-      length: 256, // 128, 192, or 256
+      length: 256,
     },
     true,
     ["encrypt", "decrypt"]
@@ -10,19 +10,15 @@ async function generateKey() {
 }
 
 function generateIv() {
-  // Don't re-use initialization vectors
-  // Always generate a new iv every time your encrypt
-  // Recommended to use 12 bytes length
-  // Needed to decrypt
   return crypto.getRandomValues(new Uint8Array(12))
 }
 
-async function exportKey(key) {
-  return await crypto.subtle.exportKey("jwk", key)
+function exportKey(key) {
+  return crypto.subtle.exportKey("jwk", key)
 }
 
-async function importKey(key) {
-  return await crypto.subtle.importKey(
+function importKey(key) {
+  return crypto.subtle.importKey(
     "jwk",
     {
       k: key,
@@ -30,60 +26,56 @@ async function importKey(key) {
       alg: "A256GCM",
       ext: true,
     },
-    { name: "AES-GCM" },
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
     true,
     ["encrypt", "decrypt"]
   )
 }
 
-async function encrypt(decrypted, key, iv) {
-  return await crypto.subtle.encrypt(
+function encrypt(decrypted, key, iv) {
+  return crypto.subtle.encrypt(
     { name: "AES-GCM", iv },
     key,
     new TextEncoder().encode(decrypted)
   )
 }
 
-async function decrypt(encrypted, key, iv) {
-  const decrypted = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv },
-    key,
-    encrypted
-  )
-  return new TextDecoder().decode(decrypted)
+function decrypt(encrypted, key, iv) {
+  return crypto.subtle
+    .decrypt({ name: "AES-GCM", iv }, key, encrypted)
+    .then(decrypted => new TextDecoder().decode(decrypted))
 }
 
-/*
-from https://developer.chrome.com/blog/how-to-convert-arraybuffer-to-and-from-string/
-*/
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf))
+function toBase64(buffer) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+    reader.readAsDataURL(new Blob([buffer]))
+  })
 }
 
-// from https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
-function str2ab(str) {
-  const buf = new ArrayBuffer(str.length)
-  const bufView = new Uint8Array(buf)
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i)
-  }
-  return buf
+function fromBase64(dataUrl) {
+  return fetch(dataUrl).then(res => res.arrayBuffer())
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
+  const regex =
+    /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
   const uuid = location.pathname.slice(1)
 
-  if (uuid) {
+  if (uuid.match(regex)) {
+    const key = await importKey(location.hash.slice(1))
     const response = await fetch(`/api?uuid=${uuid}`)
     const iv = new Uint8Array(response.headers.get("x-iv").split(","))
-    const file = await response.text()
-    const key = await importKey(location.hash.slice(1))
-
-    console.log(iv)
-    console.log(key)
+    const buffer = await response.text().then(fromBase64)
 
     try {
-      const message = await decrypt(str2ab(window.atob(file)), key, iv)
+      const message = await decrypt(buffer, key, iv)
+
       console.log(message)
     } catch (err) {
       console.log(err)
@@ -94,23 +86,26 @@ window.addEventListener("DOMContentLoaded", async () => {
   const $cryptButton = document.querySelector("button#go")
   const $contentInput = document.querySelector("textarea#content")
 
-  const cryptoKey = await generateKey()
-  const { k: privateKey } = await exportKey(cryptoKey)
+  const key = await generateKey()
+  const { k: privateKey } = await exportKey(key)
+
   $inputKey.value = privateKey
 
   $cryptButton.addEventListener("click", async () => {
     const iv = generateIv()
-    const message = await encrypt($contentInput.value, cryptoKey, iv)
+    const dataUrl = await encrypt($contentInput.value, key, iv).then(toBase64)
 
     const formData = new FormData()
-    formData.append("iv", iv)
-    formData.append("message", window.btoa(ab2str(message)))
+    formData.append("message", dataUrl)
 
-    const response = await fetch("/api", {
+    const { uuid } = await fetch("/api", {
       method: "POST",
+      headers: {
+        "x-iv": iv,
+      },
       body: formData,
-    })
-    const { uuid } = await response.json()
+    }).then(res => res.json())
+
     window.location = `/${uuid}#${privateKey}`
   })
 })

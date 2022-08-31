@@ -21,12 +21,12 @@
 1. Using the browser [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto) API, we [generate a key](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey) and the [initialization vector (IV)](https://en.wikipedia.org/wiki/Initialization_vector)
    - The key will be presented only to the user. The server never know about it, neither through requests logs
    - Even the IV being stored in the database it does not work without the key. Always need both
-   - Both IV and key are always randomic
+   - Both IV and key are always random
 1. Before send anything to server, the encrypt process happens in the Browser
-1. Send the encrypted message (in format of file) and the IV to the server
+1. Send the encrypted message (dataUrl format) and the IV to the server
 1. The server will save the content and the IV and return your the id to access it
 1. An URL will be present to you, something like `http://<host>/ac3d0752-0911-49f8-95dc-092f9eb90c21#Pdp_jo3mmrk3LDds6HXjn1m0zdVgcpV3yNJgGQ0hVM8`
-    - Who have the **full url** can read your message
+   - Who have the **full url** can read your message
 
 ### Read:
 
