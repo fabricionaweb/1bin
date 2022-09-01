@@ -14,10 +14,7 @@ enum HttpStatusCode {
  *  @param message (formData)
  *  @return { uuid }
  */
-export const onRequestPost: PagesFunction<Env> = async ({
-  request,
-  env: { DB },
-}) => {
+export const onRequestPost: PagesFunction<Env> = async ({ request, env: { DB } }) => {
   const formData = await request.formData()
   const metadata = request.headers.get("x-iv") as string
   const message = formData.get("message") as string
@@ -41,10 +38,7 @@ export const onRequestPost: PagesFunction<Env> = async ({
  *  @param uuid
  *  @return message
  */
-export const onRequest: PagesFunction<Env> = async ({
-  request: { url },
-  env: { DB },
-}) => {
+export const onRequest: PagesFunction<Env> = async ({ request: { url }, env: { DB } }) => {
   const { searchParams } = new URL(url)
   const uuid = searchParams.get("uuid")
 

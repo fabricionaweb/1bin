@@ -27,12 +27,7 @@ body {
   font-size: 0.875rem;
   text-align: center;
   color: #fff;
-  background-image: linear-gradient(
-    92.88deg,
-    #455eb5 9.16%,
-    #5643cc 43.89%,
-    #673fd7 64.72%
-  );
+  background-image: linear-gradient(92.88deg, #455eb5 9.16%, #5643cc 43.89%, #673fd7 64.72%);
   text-shadow: rgba(0, 0, 0, 0.25) 0 0.188rem 0.5rem;
   cursor: pointer;
   border-radius: 0.75rem;

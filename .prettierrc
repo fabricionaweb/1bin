@@ -10,5 +10,6 @@
   "arrowParens": "avoid",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "singleAttributePerLine": true
+  "singleAttributePerLine": false,
+  "printWidth": 120
 }
