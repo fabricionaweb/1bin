@@ -10,9 +10,9 @@ enum HttpStatusCode {
 
 /**
  * POST /api
- *  @header x-iv - request
- *  @param message - type formData
- *  @return { uuid } - json
+ *  @header x-iv (request)
+ *  @param message (formData)
+ *  @return { uuid }
  */
 export const onRequestPost: PagesFunction<Env> = async ({
   request,
@@ -37,8 +37,8 @@ export const onRequestPost: PagesFunction<Env> = async ({
 
 /**
  * GET /api
- *  @header x-iv - response
- *  @param uuid - type string
+ *  @header x-iv (response)
+ *  @param uuid
  *  @return message
  */
 export const onRequest: PagesFunction<Env> = async ({
