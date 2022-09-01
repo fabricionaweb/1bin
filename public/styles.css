@@ -1,13 +1,49 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 .editor {
   font-family: "JetBrains Mono", monospace;
   font-weight: 300;
-  font-size: 13px;
+  font-size: 0.813rem;
   line-height: 1.5;
   height: 100vh;
+  tab-size: 2;
 }
 
 .codejar-linenumbers {
   text-align: right;
-  padding-right: 6.5px;
+  padding-right: 0.406rem;
   opacity: 0.3;
+}
+
+.create {
+  position: fixed;
+  right: 1.875rem;
+  bottom: 1.875rem;
+  height: 3.5rem;
+  padding: 0 1.563rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #fff;
+  background-image: linear-gradient(
+    92.88deg,
+    #455eb5 9.16%,
+    #5643cc 43.89%,
+    #673fd7 64.72%
+  );
+  text-shadow: rgba(0, 0, 0, 0.25) 0 0.188rem 0.5rem;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: all 0.5s;
+}
+
+.create:hover {
+  box-shadow: rgba(80, 63, 205, 0.5) 0 0.063rem 1.875rem;
+  transition-duration: 0.1s;
+}
+
+.create:active {
+  box-shadow: rgba(80, 63, 205, 0.5) 0 0.063rem 1.25rem;
 }
