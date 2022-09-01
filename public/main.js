@@ -36,11 +36,7 @@ function importKey(key) {
 }
 
 function encrypt(decrypted, key, iv) {
-  return crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
-    key,
-    new TextEncoder().encode(decrypted)
-  )
+  return crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(decrypted))
 }
 
 function decrypt(encrypted, key, iv) {
@@ -63,8 +59,7 @@ function fromBase64(dataUrl) {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const regex =
-    /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
+  const regex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
   const uuid = location.pathname.slice(1)
 
   if (uuid.match(regex)) {

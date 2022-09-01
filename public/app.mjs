@@ -1,3 +1,4 @@
+import { createBin } from "./subtle.mjs"
 import {
   CodeJar,
   withLineNumbers,
@@ -9,8 +10,25 @@ const highlight = element => {
   hljs.highlightElement(element)
 }
 
+const onCreateClick = jar => async () => {
+  const content = jar.toString().trim()
+  if (!content) return
+
+  document.body.classList.add("loading")
+  const url = await createBin(content)
+
+  try {
+    await navigator.clipboard.writeText(url)
+  } catch (e) {}
+
+  location.assign(url)
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const $editor = document.querySelector(".editor")
-  CodeJar($editor, withLineNumbers(highlight, { width: "45px" }))
+  const jar = CodeJar($editor, withLineNumbers(highlight, { width: "45px" }))
   $editor.focus()
+
+  const $button = document.querySelector(".create")
+  $button.addEventListener("click", onCreateClick(jar))
 })
