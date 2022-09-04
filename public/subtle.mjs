@@ -37,3 +37,13 @@ export async function createBin(content) {
 
   return `${protocol}//${host}/${uuid}#${privateKey}`
 }
+
+export async function readBin(uuid, k) {
+  const response = await fetch(`/api?uuid=${uuid}`)
+  const iv = new Uint8Array(response.headers.get("x-iv").split(","))
+  const key = await importKey(k)
+  const content = await response.text().then(fromDataUrl)
+  const message = await decrypt(content, key, iv)
+
+  return message
+}
