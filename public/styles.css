@@ -1,5 +1,7 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
+  background: hsl(220, 13%, 19%);
+  color: hsl(219, 13.5%, 71%);
 }
 
 /* loading fullscreen overlay to prevent user interaction */
@@ -27,7 +29,10 @@ body {
 .codejar-linenumbers {
   text-align: right;
   padding-right: 0.406rem;
-  opacity: 0.3;
+  /* code below is from js */
+  mix-blend-mode: normal !important;
+  background: hsl(220, 13%, 19%) !important;
+  color: hsl(219, 13.5%, 27%) !important;
 }
 
 /* button */
@@ -61,4 +66,20 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
   box-shadow: rgba(80, 63, 205, 0.5) 0 0.063rem 1.25rem;
+}
+
+/* github badge */
+.github {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 2.813rem;
+  height: 2.813rem;
+  padding: 0.406rem;
+  background: hsl(220, 13%, 19%);
+}
+.github path {
+  fill: hsl(219, 13.5%, 27%);
 }
