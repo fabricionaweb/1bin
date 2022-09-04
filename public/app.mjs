@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const jar = CodeJar($editor, withLineNumbers(highlight, { width: "45px" }))
 
   const onCreateClick = async () => {
-    const content = jar.toString().trim()
-    if (!content) return
+    const content = jar.toString()
+    if (!content?.trim()) return
 
     setLoading(true)
     const url = await createBin(content)
