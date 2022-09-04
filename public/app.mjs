@@ -6,26 +6,12 @@ import {
 
 const UUID4_REGEX = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 
-const loading = force => document.body.classList.toggle("loading", force)
+const setLoading = force => document.body.classList.toggle("loading", force)
 
 const highlight = element => {
   // highlight.js does not trims old tags, let's do it by this hack
   element.textContent = element.textContent
   hljs.highlightElement(element)
-}
-
-const onCreateClick = jar => async () => {
-  const content = jar.toString().trim()
-  if (!content) return
-
-  loading()
-  const url = await createBin(content)
-
-  try {
-    await navigator.clipboard.writeText(url)
-  } catch (e) {}
-
-  location.assign(url)
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -36,15 +22,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   const $button = document.querySelector(".create")
 
   const jar = CodeJar($editor, withLineNumbers(highlight, { width: "45px" }))
-  $button.addEventListener("click", onCreateClick(jar))
 
-  if (UUID4_REGEX.test(uuid)) {
-    loading()
-    $button.setAttribute("hidden", true)
-    $editor.setAttribute("contenteditable", false)
-    jar.updateCode(await readBin(uuid, key))
-    loading()
+  const onCreateClick = async () => {
+    const content = jar.toString().trim()
+    if (!content) return
+
+    setLoading(true)
+    const url = await createBin(content)
+
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch (e) {}
+
+    setLoading(false)
+    location.assign(url)
   }
 
-  $editor.focus()
+  const onEditClickOnce = () => {
+    $button.textContent = "Fork it"
+    $button.removeEventListener("click", onEditClickOnce)
+    $button.addEventListener("click", onCreateClick)
+
+    $editor.setAttribute("contenteditable", true)
+    $editor.focus()
+  }
+
+  if (UUID4_REGEX.test(uuid)) {
+    setLoading(true)
+
+    $button.textContent = "Edit it"
+    $button.addEventListener("click", onEditClickOnce)
+
+    $editor.setAttribute("contenteditable", false)
+
+    try {
+      jar.updateCode(await readBin(uuid, key))
+    } catch (e) {}
+
+    setLoading(false)
+  } else {
+    $button.addEventListener("click", onCreateClick)
+    $editor.focus()
+  }
 })
