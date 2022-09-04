@@ -50,16 +50,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (UUID4_REGEX.test(uuid)) {
     setLoading(true)
 
-    $button.textContent = "Edit it"
-    $button.addEventListener("click", onEditClickOnce)
-
-    $editor.setAttribute("contenteditable", false)
-
     try {
-      jar.updateCode(await readBin(uuid, key))
-    } catch (e) {}
+      const content = await readBin(uuid, key)
+      jar.updateCode(content)
 
-    setLoading(false)
+      $button.textContent = "Edit it"
+      $button.addEventListener("click", onEditClickOnce)
+
+      $editor.setAttribute("contenteditable", false)
+    } catch (e) {
+      $editor.focus()
+    } finally {
+      setLoading(false)
+    }
   } else {
     $button.addEventListener("click", onCreateClick)
     $editor.focus()
